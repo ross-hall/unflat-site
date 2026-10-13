@@ -1,0 +1,19 @@
+{
+  "name": "unflat-site",
+  "private": true,
+  "type": "module",
+  "description": "Unflat website: Stripe Managed Payments checkout and licence keys (Netlify)",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "keys": "node scripts/generate-keypair.js",
+    "build:plugin": "node scripts/build-plugin-snippet.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "stripe": "^23.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0",
+    "tweetnacl": "^1.0.3"
+  }
+}

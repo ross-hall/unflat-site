@@ -1,0 +1,21 @@
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# The thank-you page shows a licence key, so keep it out of caches and search engines.
+[[headers]]
+  for = "/thanks"
+  [headers.values]
+    Cache-Control = "no-store"
+    X-Robots-Tag = "noindex"
+    Referrer-Policy = "no-referrer"
+
+[[headers]]
+  for = "/thanks.html"
+  [headers.values]
+    Cache-Control = "no-store"
+    X-Robots-Tag = "noindex"
+    Referrer-Policy = "no-referrer"
