@@ -9,7 +9,7 @@ import vm from "node:vm";
 import { readFileSync } from "node:fs";
 import { generateKeyPairSync } from "node:crypto";
 import Stripe from "stripe";
-import { handleCheckout, handleHome, handleLicence, handleWebhook } from "../lib/handlers.mjs";
+import { handleCheckout, handleHome, handleLicence, handleWebhook, stripeFromEnv } from "../lib/handlers.mjs";
 
 const { publicKey, privateKey } = generateKeyPairSync("ed25519");
 const PUB = publicKey.export({ format: "jwk" }).x;
@@ -135,6 +135,19 @@ test("the checkout subdomain's home page redirects to the main site", async () =
   const res = handleHome(req("/"), { env });
   assert.equal(res.status, 302);
   assert.equal(res.headers.get("location"), "https://unflat.app/");
+});
+
+test("with no Stripe key set, each endpoint fails politely instead of crashing", async () => {
+  const bare = { DOMAIN: "buy.unflat.app", SUPPORT_EMAIL: "hello@unflat.app" };
+  const s = stripeFromEnv(bare);
+  const checkout = await handleCheckout(req("/api/checkout?tier=personal"), { stripe: s, env: bare });
+  assert.equal(checkout.status, 503);
+  assert.match(await checkout.text(), /Checkout couldn't start/);
+  const licence = await handleLicence(req("/api/licence?session_id=cs_test_abc"), { stripe: s, env: bare });
+  assert.equal(licence.status, 500);
+  assert.equal((await licence.json()).support, "hello@unflat.app");
+  const hook = await handleWebhook(req("/api/stripe-webhook", { method: "POST", body: "{}" }), { stripe: s, env: bare });
+  assert.equal(hook.status, 500);
 });
 
 test("without SITE_URL the home page shows a holding page instead of redirecting to itself", async () => {
