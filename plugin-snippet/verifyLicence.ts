@@ -11,7 +11,7 @@
 import nacl from "tweetnacl";
 
 // Paste LICENCE_PUBLIC_KEY from scripts/generate-keypair.js here.
-export const PUBLIC_KEY = "{{LICENCE_PUBLIC_KEY}}";
+export const PUBLIC_KEY = "LJbqJqJJ8cmFJzpl1xzgv_UigugP96sgKr8QK7Qz_bA";
 
 export type Tier = "personal" | "studio";
 
