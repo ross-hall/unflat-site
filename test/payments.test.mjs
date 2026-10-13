@@ -137,6 +137,14 @@ test("the checkout subdomain's home page redirects to the main site", async () =
   assert.equal(res.headers.get("location"), "https://unflat.app/");
 });
 
+test("without SITE_URL the home page shows a holding page instead of redirecting to itself", async () => {
+  for (const e of [{ ...env, SITE_URL: "" }, { URL: "https://buy.unflat.app" }, { SITE_URL: "https://buy.unflat.app" }]) {
+    const res = handleHome(req("/"), { env: e });
+    assert.equal(res.status, 200);
+    assert.match(await res.text(), /Unflat checkout/);
+  }
+});
+
 // ---- licence ----
 test("paid personal session returns a key the plugin accepts", async () => {
   const res = await handleLicence(req("/api/licence?session_id=cs_test_personalpaid"), { stripe, env });
